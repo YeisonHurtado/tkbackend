@@ -1,0 +1,42 @@
+@api = http://localhost:8080
+
+GET {{api}}/events
+
+### GET ONE
+GET {{api}}/event/64699b877352de696c9400a6
+
+###
+POST {{api}}/new_event
+Content-Type: application/json
+
+{
+    "name":"Dance on water",
+    "lineup":[
+        {
+            "name":"Mariana Ramirez",
+            "pseudo":"Marez DJ"
+        },
+        {
+            "name":"Adriana Lopez",
+            "pseudo":"Zutt"
+        },
+        {
+            "name":"Alex Turner",
+            "pseudo":"Stan Christ"
+        }
+    ],
+    "date":"10/20/2023",
+    "location":"10-60",
+    "poster":"./public/under.png"
+}
+
+###
+PUT {{api}}/edit_event/64699b877352de696c9400a6
+Content-Type: application/json
+
+{   
+    "name":"Dance with the devil"
+}
+
+###
+DELETE {{api}}/delete_event/646a81a84cfc0807e12f190f
