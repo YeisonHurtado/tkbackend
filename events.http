@@ -10,33 +10,29 @@ POST {{api}}/new_event
 Content-Type: application/json
 
 {
-    "name":"Dance on water",
+    "name":"Dance Techno",
     "lineup":[
         {
-            "name":"Mariana Ramirez",
-            "pseudo":"Marez DJ"
+            "name":"Ashley Trumman",
+            "pseudo":"Luxury"
         },
         {
-            "name":"Adriana Lopez",
-            "pseudo":"Zutt"
-        },
-        {
-            "name":"Alex Turner",
-            "pseudo":"Stan Christ"
+            "name":"Abraham Pearce",
+            "pseudo":"Pushman"
         }
     ],
-    "date":"10/20/2023",
-    "location":"10-60",
-    "poster":"./public/under.png"
+    "date":"07/01/2023",
+    "location":"La frecuencia violeta",
+    "poster":"./public/baumcali.png"
 }
 
 ###
-PUT {{api}}/edit_event/64699b877352de696c9400a6
+PUT {{api}}/edit_event/646bd238d0feaaba7cbb3f4b
 Content-Type: application/json
 
 {   
-    "name":"Dance with the devil"
+    "poster":"./images/baumcali.png"
 }
 
 ###
-DELETE {{api}}/delete_event/646a81a84cfc0807e12f190f
+DELETE {{api}}/delete_event/646a893d00000bf6d3e9e894
