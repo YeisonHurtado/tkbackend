@@ -1,5 +1,6 @@
 import exp from 'constants';
 import {Schema, model} from 'mongoose'
+import config from '../config';
 
 const eventSchema = new Schema({
     name:{
@@ -9,11 +10,11 @@ const eventSchema = new Schema({
     }, 
     lineup: {
         type: Array,
-        required: true
+        required: false
     },
     date: {
         type: Date,
-        required: true
+        required: false
     },
     location: {
         type: String,
@@ -28,5 +29,10 @@ const eventSchema = new Schema({
     versionKey: false,
     timestamps: true
 });
+
+// eventSchema.methods.setPoster = function (filename: String) {
+//     const urlPoster = `${config.MONGO_HOST}:${config.MONGO_PORT}/images/${filename}`
+//     this.poster = urlPoster
+// }
 
 export default model('Event', eventSchema);

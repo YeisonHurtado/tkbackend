@@ -27,12 +27,12 @@ Content-Type: application/json
 }
 
 ###
-PUT {{api}}/edit_event/646bd238d0feaaba7cbb3f4b
+PUT {{api}}/edit_event/646c55a18dbcdabc63fee811
 Content-Type: application/json
 
 {   
-    "poster":"./images/baumcali.png"
+    "poster":"http://127.0.0.1:8080/images/Captura de pantalla 2023-05-01 031041.png1684821409758.png"
 }
 
 ###
-DELETE {{api}}/delete_event/646a893d00000bf6d3e9e894
+DELETE {{api}}/delete_event/646c53da434ec326c7d27eb1

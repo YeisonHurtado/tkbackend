@@ -1,5 +1,6 @@
 import {RequestHandler} from 'express'
 import Event from './Events'
+import config from '../config';
 
 export const getEvents : RequestHandler = async (req, res) => {
     const events = await Event.find(); 
@@ -13,18 +14,16 @@ export const getEvent : RequestHandler = async (req, res) => {
 }
 
 export const createEvent : RequestHandler = async (req, res) => {
-    const event = new Event(req.body);
-    const eventSaved = await event.save();
-    res.json(eventSaved);
+    if (req.file) {
+        const {filename} = req.file
+        req.body.poster = `http://${config.MONGO_HOST}:${config.PORT}/images/${filename}`
+    }
+    const event = new Event(req.body)
+    const eventSaved = await event.save()
+    res.json(eventSaved)
 }
 
 export const updateEvent : RequestHandler =async (req, res) => {
-    // if (req.body.lineup) {
-        //     delete req.body.lineup
-        //     console.log( req.body.lineup)
-        //     console.log( "Obtenido",lineup)
-        //     //const eventUpdate = await Event.findByIdAndUpdate(req.params)
-    //     // }}
     const lineups = req.body.lineup || [];
     delete req.body.lineup
     console.log(req.body.lineup)
