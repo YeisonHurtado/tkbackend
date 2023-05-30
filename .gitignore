@@ -3,3 +3,4 @@ events.http
 dist
 node_modules
 public
+/.vscode

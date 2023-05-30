@@ -20,7 +20,6 @@ export const createEvent : RequestHandler = async (req, res, next) => {
     try {
         if (req.file) {
             try {
-                
                 if (validation.ValidateFieldRequired(req.body.name, req.body.location) && validation.ValidateFormatFile(req.file)){
                     const {filename} = req.file
                     const nombre = req
@@ -30,8 +29,8 @@ export const createEvent : RequestHandler = async (req, res, next) => {
                     eventSaved ? res.json(eventSaved) : res.status(204).json()
                 }
             } catch (error) {
-                const pathImg = path.join(__dirname, `../../public/images/${req.file.filename}`)
-                if (fs.existsSync(pathImg)) fs.unlinkSync(pathImg)
+                const pathImg = path.join(__dirname, `../../public/images/${req.file.filename}`) /** Toma la ruta original del archivo guardado */
+                if (fs.existsSync(pathImg)) fs.unlinkSync(pathImg) /** Borra el archivo que se guardo, debido a un error ocurrido en la validación */
                 next(error)
             }
         } else {

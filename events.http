@@ -35,4 +35,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE {{api}}/delete_event/646c53da434ec326c7d27eb1
+DELETE {{api}}/delete_event/647569c578dd67311f50c1b0
+
+###
+DELETE {{api}}/delete_all_events
