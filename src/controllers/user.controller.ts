@@ -1,0 +1,129 @@
+import { RequestHandler } from 'express'
+import User from '../models/Users'
+import * as userValidation from '../Validations/ValidationUsers'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
+import config from '../config'  
+//import * as validation from '../Validations/ValidationSignup'
+import moment from 'moment'
+import Role from '../models/Role'
+
+export const login: RequestHandler = async (req, res, next) => {
+    const { userOrEmail, password } = req.body
+    const user: any = await User.findOne({ $or: [{ username: userOrEmail }, { email: userOrEmail }] }).populate("roles")
+    try {
+        if (user) {
+            const userPWD = user.password
+            if (userValidation.pwdLogin(password, userPWD, true)) {
+                const token = jwt.sign(
+                    { email: user.email, id: user._id, role: [user.roles], names: user.names, surnames: user.surnames, userOrEmail},
+                    config.API_KEY,
+                    { expiresIn: config.TOKEN_EXPIRES_IN},
+                );
+                return res.json({token})
+            }
+        }
+        userValidation.pwdLogin("", "", false)
+        next()
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getUser: RequestHandler =async ({params}, res, next) => {
+    const user = await User.findById(params.id).populate("events")
+    if (!user) return res.status(204).json()
+    return res.json(user)
+}
+
+export const getAll: RequestHandler = async ({body}, res) => { 
+    const users : any = await User.find()
+    if (!users) {
+        return res.status(204).json()
+    }
+    return res.json(users);
+}
+
+export const signup: RequestHandler = async ({ body }, res, next) => {
+    const { names, surnames, birth, email, username, password, passwordConfirmation, roles } = body
+
+    try {
+        if (userValidation.userFields(body) && userValidation.pwdConfirmation(password, passwordConfirmation)) {
+            const userExists = await User.find({ username: username })
+            const emailExists = await User.find({ email: email })
+            if (userExists.length != 0) {
+                userValidation.usernameExist(true, 'usernameExists')
+            } else if (emailExists.length != 0) {
+                userValidation.usernameExist(true, 'emailExists')
+            }
+
+            body.password = bcrypt.hashSync(password, 10)
+            const user = new User(body)
+            if (roles){
+                const foundRoles = await Role.find({id: {$in:roles}})
+                user.roles = foundRoles.map(role => role._id)
+            } else {
+                const role : any = await Role.findOne({name: "user"})
+                user.roles = [role._id]
+            }
+            const userSaved = await user.save()
+            userSaved ? res.json(userSaved) : res.status(204).json()
+        }
+
+    } catch (error) {
+        next(error)
+    }
+
+}
+
+export const updateUser: RequestHandler = async ({ body, params }, res, next) => {
+    const { names, surnames, birth, email, username, password, passwordConfirmation, roles } = body
+    const { id } = params
+    const userFound = await User.findById(id)
+
+    try {
+        if (userFound) {
+            try {
+                const userExists = await User.find({ username: username, _id: { $ne: id } })
+                const emailExists = await User.find({ email: email, _id: { $ne: id } })
+
+                if (userValidation.userFields(body) && userValidation.pwdConfirmation(password, passwordConfirmation)) {
+                    if (userExists.length != 0) {
+                        userValidation.usernameExist(true, 'usernameExists')
+                    } else if (emailExists.length != 0) {
+                        userValidation.usernameExist(true, 'emailExists')
+                    }
+                    body.password = bcrypt.hashSync(password, 10)
+                    
+                    if (roles){
+                        const foundRoles = await Role.find({id: {$in:roles}})
+                        body.roles = foundRoles.map(role => role._id)
+                    } else {
+                        const role : any = await Role.findOne({name: "user"})
+                        body.roles = [role._id]
+                    }
+                    const userUpdate : any = await User.findByIdAndUpdate(id, { ...body }, { new: true })
+                    userUpdate ? res.json(userUpdate) : res.status(204).json()
+                }
+                next()
+
+            } catch (error) {
+                next(error)
+            }
+        }
+        throw {
+            status: 404,
+            name: 'update_user',
+            message: "Usuario no encontrado"
+        }
+    } catch (error) {
+        next(error)
+    }
+
+}
+
+export const deleteUser: RequestHandler = async (req, res) => {
+    const userFound = await User.findByIdAndDelete(req.params.id)
+    if (!userFound) return res.status(204).json()
+    return res.json(userFound)
+}
