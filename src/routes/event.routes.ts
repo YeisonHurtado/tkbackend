@@ -1,9 +1,9 @@
 import {Router} from 'express'
-import * as event from './event.controller'
+import * as event from '../controllers/event.controller'
+import {validateNewEvent, verifyToken, validateModifiedEvent} from '../middlewares'
 import multer from 'multer'
 import path from 'path'
-import { AppError, HttpCode } from '../exceptions/AppError'
-import errorsHandler from '../exceptions/ErrorHandler'
+import { v4 as uuidv4} from 'uuid'
 
 
 const storage = multer.diskStorage({
@@ -12,7 +12,8 @@ const storage = multer.diskStorage({
     },
 
     filename: function (req, file, cb) {
-        cb (null, file.originalname.replace(/\s+/g, '') + Date.now()+path.extname(file.originalname))
+        const ext = path.extname(file.originalname)
+        cb (null, uuidv4() + path.extname(file.originalname))
     }
 })
 
@@ -24,9 +25,12 @@ const router = Router();
 
 router.get('/events', event.getEvents);
 router.get('/event/:id', event.getEvent);
-router.post('/new_event', upload.single('poster'), event.createEvent);
-router.put('/edit_event/:id', event.updateEvent);
-router.delete('/delete_event/:id', event.deleteEvent);
-router.delete('/delete_all_events', event.deleteAllEvents)
+router.get('/events/past/:id?', event.getPastEvents);
+router.get('/events/upcoming/:id?', event.getUpComingEvents);
+router.get('/events/search/:search?', event.getEventsLike);
+router.post('/create/event', verifyToken, upload.single('poster'), validateNewEvent, event.createEvent);
+router.put('/update/event/:id', verifyToken, upload.single('poster'), validateNewEvent, validateModifiedEvent, event.updateEvent);
+router.delete('/delete/event/:id', verifyToken, event.deleteEvent);
+router.delete('/delete/allevents', event.deleteAllEvents)
 
 export default router;

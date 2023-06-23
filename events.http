@@ -2,6 +2,9 @@
 
 GET {{api}}/events
 
+###
+GET {{api}}/events/past
+
 ### GET ONE
 GET {{api}}/event/64699b877352de696c9400a6
 
@@ -10,6 +13,7 @@ POST {{api}}/new_event
 Content-Type: application/json
 
 {
+
     "name":"Dance Techno",
     "lineup":[
         {
@@ -35,7 +39,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE {{api}}/delete_event/647569c578dd67311f50c1b0
+DELETE {{api}}/delete/event/64878f9b26073f209924c186
 
 ###
-DELETE {{api}}/delete_all_events
+DELETE {{api}}/delete/allevents
