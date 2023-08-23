@@ -21,3 +21,14 @@ export const verifyToken: RequestHandler = async ({ body, headers }, res, next) 
         console.error(error)
     }
 }
+
+export const verifyTokenAdmin: RequestHandler = async ({ body, headers }, res, next) => {
+    const token = headers["x-access-token"]
+    try {
+        const decoded: any = jwt.verify(JSON.parse(token?.toLocaleString() as string), config.API_KEY)
+        if (!decoded.roles.find((e: any) => e.name === "admin")) return res.status(403).json({ message: "Not Allowed" })
+        next()
+    } catch (error) {
+        console.error(error)
+    }
+}

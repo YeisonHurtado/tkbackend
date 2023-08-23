@@ -18,22 +18,22 @@ export const getEvent: RequestHandler = async (req, res) => {
     return res.json(event);
 }
 
-export const getPastEvents: RequestHandler =async (req, res) => {
+export const getPastEvents: RequestHandler = async (req, res) => {
     const dateNow = Date.now()
     if (req.params.id) {
-        const pastEventsUser = await Users.findById(req.params.id).populate({path: 'events', match: {date: {$lt: new Date(dateNow)}}})
+        const pastEventsUser = await Users.findById(req.params.id).populate({ path: 'events', match: { date: { $lt: new Date(dateNow) } } })
         return res.json(pastEventsUser)
     }
-    const pastEvents = await Event.find({date: {$lt: new Date(dateNow)}})
+    const pastEvents = await Event.find({ date: { $lt: new Date(dateNow) } })
     return res.json(pastEvents)
 }
-export const getUpComingEvents: RequestHandler =async (req, res) => {
+export const getUpComingEvents: RequestHandler = async (req, res) => {
     const dateNow = Date.now()
     if (req.params.id) {
-        const upcomingEventsUser = await Users.findById(req.params.id).populate({path: 'events', match: {date: {$gte: new Date(dateNow)}}})
+        const upcomingEventsUser = await Users.findById(req.params.id).populate({ path: 'events', match: { date: { $gte: new Date(dateNow) } } })
         return res.json(upcomingEventsUser)
     }
-    const events = await Event.find({date: {$gte: new Date(dateNow)}})
+    const events = await Event.find({ date: { $gte: new Date(dateNow) } })
     return res.json(events)
 }
 

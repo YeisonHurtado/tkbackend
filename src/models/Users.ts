@@ -1,34 +1,43 @@
 import { Schema, model } from "mongoose";
 
 const userSchema = new Schema({
-    names:{
+    names: {
         type: String,
         required: true,
         trim: true
     },
-    surnames:{
+    surnames: {
         type: String,
         required: true,
         trim: true
     },
-    birth:{
+    birth: {
         type: Date,
         required: true
     },
-    email:{
+    email: {
         type: String,
         required: true,
         trim: true
     },
-    username:{
+    username: {
         type: String,
         required: true,
         trim: true
     },
-    password:{
+    password: {
         type: String,
         required: true,
         trim: false
+    },
+    code: {
+        type: String,
+        required: true
+    },
+    activated: {
+        type: Boolean,
+        required: false,
+        default: false
     },
     roles: [{
         ref: "Role",
@@ -39,8 +48,8 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: false
     }]
-},{
+}, {
     versionKey: false,
     timestamps: true
 })
-export default model('User', userSchema )
+export default model('User', userSchema)

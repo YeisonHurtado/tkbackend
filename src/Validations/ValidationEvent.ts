@@ -25,11 +25,12 @@ export const ValidateFormatFile = function (poster: Express.Multer.File): boolea
     }
 }
 
-export const ValidateFieldRequired = function (nameEvent: String, locationEvent: String): boolean {
+export const ValidateFieldRequired = function (nameEvent: String, locationEvent: String, dateEvent: String): boolean {
     nameEvent = nameEvent.trim()
     locationEvent = locationEvent.trim()
     const nameLength = nameEvent.length
     const locationLength = locationEvent.length
+    const dateEventLength = dateEvent.length
 
     if (nameLength == 0) {
         throw {
@@ -44,6 +45,13 @@ export const ValidateFieldRequired = function (nameEvent: String, locationEvent:
             name: 'Validation',
             path: 'location',
             message: "Debes escribir el lugar del evento (o sin definir)."
+        }
+    } else if (dateEventLength == 0) {
+        throw {
+            status: 400,
+            name: 'Validation',
+            path: 'date',
+            message: "La fecha del evento es requerida."
         }
     }
 
@@ -61,7 +69,7 @@ export const ValidateNoUploadedFile = function (uploaded: boolean) {
     }
 }
 
-export const ErrorModifyNotAllowed = function (allowed: boolean) : boolean {
+export const ErrorModifyNotAllowed = function (allowed: boolean): boolean {
     if (!allowed) {
         throw {
             status: 403,

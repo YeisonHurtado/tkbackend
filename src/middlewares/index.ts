@@ -1,5 +1,6 @@
-import {verifyToken} from './verifyToken'
-import {validateNewEvent, validateModifiedEvent} from './verifyEvent'
+import { verifyToken, verifyTokenAdmin } from './verifyToken'
+import { validateNewEvent, validateModifiedEvent } from './verifyEvent'
+import { validateNewUser } from './verifyUser'
 
-export {verifyToken}
-export {validateNewEvent, validateModifiedEvent}
+export { verifyToken, verifyTokenAdmin }
+export { validateNewEvent, validateModifiedEvent, validateNewUser }

@@ -6,13 +6,13 @@ import path from 'path'
 import Users from '../models/Users'
 import Events from '../models/Events'
 import { error } from 'console'
-import fs  from 'fs-extra'
-
+import fs from 'fs-extra'
+//Valida el formulario para crea o actualizar eventos
 export const validateNewEvent: RequestHandler = async (req, res, next) => {
     try {
 
         if (req.file) {
-            validation.ValidateFieldRequired(req.body.name, req.body.location)
+            validation.ValidateFieldRequired(req.body.name, req.body.location, req.body.date)
             validation.ValidateFormDJ(req.body.lineup)
             validation.ValidateFormatFile(req.file)
 
@@ -28,8 +28,9 @@ export const validateNewEvent: RequestHandler = async (req, res, next) => {
     next()
 }
 
+//Valida únicamente si el usuario que intenta actualizar el evento fue el que lo subio en primera instancia
 export const validateModifiedEvent: RequestHandler = async ({ file, body, params, headers }, res, next) => {
-    const {filename} : any = file
+    const { filename }: any = file
     try {
         const token: string | any = headers["x-access-token"]
         const decoded: any = jwt.verify(JSON.parse(token.toString()), config.API_KEY)

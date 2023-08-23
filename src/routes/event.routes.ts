@@ -28,8 +28,10 @@ router.get('/event/:id', event.getEvent);
 router.get('/events/past/:id?', event.getPastEvents);
 router.get('/events/upcoming/:id?', event.getUpComingEvents);
 router.get('/events/search/:search?', event.getEventsLike);
+
 router.post('/create/event', verifyToken, upload.single('poster'), validateNewEvent, event.createEvent);
 router.put('/update/event/:id', verifyToken, upload.single('poster'), validateNewEvent, validateModifiedEvent, event.updateEvent);
+
 router.delete('/delete/event/:id', verifyToken, event.deleteEvent);
 router.delete('/delete/allevents', event.deleteAllEvents)
 
