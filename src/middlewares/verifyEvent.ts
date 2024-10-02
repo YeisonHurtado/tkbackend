@@ -5,24 +5,28 @@ import config from '../config'
 import path from 'path'
 import Users from '../models/Users'
 import Events from '../models/Events'
-import { error } from 'console'
 import fs from 'fs-extra'
+import { v4 as uuidv4 } from 'uuid'
+
 //Valida el formulario para crea o actualizar eventos
 export const validateNewEvent: RequestHandler = async (req, res, next) => {
     try {
 
+        validation.ValidateFieldRequired(req.body.name, req.body.location, req.body.date)
+        validation.ValidateFormDJ(req.body.lineup)
         if (req.file) {
-            validation.ValidateFieldRequired(req.body.name, req.body.location, req.body.date)
-            validation.ValidateFormDJ(req.body.lineup)
             validation.ValidateFormatFile(req.file)
-
+            // Guarda el archivo manualmente después de las validaciones
+            const filename = uuidv4() + path.extname(req.file.originalname)
+            const filePath = path.join(__dirname, `../../public/images/${filename}`)
+            fs.writeFileSync(filePath, req.file.buffer)
+            req.body.path = filePath
+            req.file.filename = filename
         } else {
             validation.ValidateNoUploadedFile(false)
         }
 
     } catch (error) {
-        const pathImg = path.join(__dirname, `../../public/images/${req.file?.filename}`) /** Toma la ruta original del archivo guardado */
-        if (fs.existsSync(pathImg)) fs.unlinkSync(pathImg)
         next(error)
     }
     next()

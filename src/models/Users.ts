@@ -47,7 +47,13 @@ const userSchema = new Schema({
         ref: "Event",
         type: Schema.Types.ObjectId,
         required: false
-    }]
+    }],
+
+    profile: {
+        type: String,
+        required: false,
+        default: ""
+    },
 }, {
     versionKey: false,
     timestamps: true

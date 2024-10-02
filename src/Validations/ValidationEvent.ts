@@ -1,6 +1,7 @@
 import { Request } from 'express'
 import multer from 'multer'
 import path from 'path'
+import { ValidationError } from '../exceptions/ErrorHandler'
 
 interface lineupInterface {
     name_dj: string,
@@ -17,41 +18,19 @@ export const ValidateFormatFile = function (poster: Express.Multer.File): boolea
         return true
     }
 
-    throw {
-        status: 400,
-        name: 'Validation',
-        path: 'poster',
-        message: "Debes subir un archivo con formato válido."
-    }
+    throw new ValidationError(400, 'poster', "Debes subir un archivo con formato válido.")
 }
 
-export const ValidateFieldRequired = function (nameEvent: String, locationEvent: String, dateEvent: String): boolean {
-    nameEvent = nameEvent.trim()
-    locationEvent = locationEvent.trim()
-    const nameLength = nameEvent.length
-    const locationLength = locationEvent.length
-    const dateEventLength = dateEvent.length
+export const ValidateFieldRequired = function (nameEvent: string, locationEvent: string, dateEvent: string): boolean {
+    const fields = [
+        { name: 'name', value: nameEvent.trim(), message: 'Debes escribir el nombre del evento.' },
+        { name: 'location', value: locationEvent.trim(), message: 'Debes escribir el lugar del evento (o sin definir).' },
+        { name: 'date', value: dateEvent, message: 'La fecha del evento es requerida.' }
+    ]
 
-    if (nameLength == 0) {
-        throw {
-            status: 400,
-            name: 'Validation',
-            path: 'name',
-            message: "Debes escribir el nombre del evento."
-        }
-    } else if (locationLength == 0) {
-        throw {
-            status: 400,
-            name: 'Validation',
-            path: 'location',
-            message: "Debes escribir el lugar del evento (o sin definir)."
-        }
-    } else if (dateEventLength == 0) {
-        throw {
-            status: 400,
-            name: 'Validation',
-            path: 'date',
-            message: "La fecha del evento es requerida."
+    for (const field of fields) {
+        if (field.value.length === 0) {
+            throw new ValidationError(400, field.name, field.message)
         }
     }
 
@@ -60,23 +39,13 @@ export const ValidateFieldRequired = function (nameEvent: String, locationEvent:
 
 export const ValidateNoUploadedFile = function (uploaded: boolean) {
     if (!uploaded) {
-        throw {
-            status: 400,
-            name: 'Validation',
-            path: 'poster',
-            message: "Debes subir el poster del evento."
-        }
+        throw new ValidationError(400, "poster", "Debes subir el poster del evento.")
     }
 }
 
 export const ErrorModifyNotAllowed = function (allowed: boolean): boolean {
     if (!allowed) {
-        throw {
-            status: 403,
-            name: 'Validation',
-            path: 'alert',
-            message: "No tienes permisos para realizar esta acción."
-        }
+        throw new ValidationError(403, 'alert', "No tienes permisos para realizar esta acción.")
     }
     return true
 }
@@ -86,21 +55,11 @@ export const ValidateFormDJ = function (lineup?: Array<lineupInterface>) {
 
         lineup.map(item => {
             if (item.name_dj.length == 0) {
-                throw {
-                    status: 400,
-                    name: 'Validation',
-                    path: 'name_dj',
-                    message: 'Por favor, escribe el nombre del artista.'
-                }
+                throw new ValidationError(400, 'name_dj', "Por favor, escribe el nombre del artista.")
             }
         })
         return true
     }
 
-    throw {
-        status: 400,
-        name: 'Validation',
-        path: 'name_dj',
-        message: 'Debe haber por lo menos un artista confirmado.'
-    }
+    throw new ValidationError(400, 'name_dj', "Debe haber por lo menos un artista confirmado.")
 }

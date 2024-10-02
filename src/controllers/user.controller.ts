@@ -9,6 +9,8 @@ import * as toEmail from '../email.controller/send.confirmation.account'
 //import * as validation from '../Validations/ValidationSignup'
 import moment from 'moment'
 import Role from '../models/Role'
+import fs from 'fs-extra'
+import path from 'path'
 
 export const login: RequestHandler = async (req, res, next) => {
     const { userOrEmail, password } = req.body
@@ -135,6 +137,26 @@ export const updateUser: RequestHandler = async ({ body, params }, res, next) =>
         next(error)
     }
 
+}
+
+export const setProfilePhoto: RequestHandler = async ({ file, body, params }, res, next) => {
+    try {
+        const user = await User.findById(params.id)
+        const nameFile = user?.profile?.replace(`http://${config.MONGO_HOST}:${config.PORT}/images/profiles/`, "") || ""
+
+        if (user?.profile) {
+            await fs.unlink(path.join(__dirname, '../../public/images/profiles', nameFile))
+        }
+
+        const { filename }: string | any = file
+        body.profile = `http://${config.MONGO_HOST}:${config.PORT}/images/profiles/${filename}`
+        console.log("Esto es body profile: " + body.profile)
+        const userUpdate = await User.findByIdAndUpdate(params.id, { profile: body.profile })
+        userUpdate ? res.json(userUpdate) : res.status(204).json()
+    } catch (error) {
+        next(error)
+    }
+    next()
 }
 
 export const confirmAccount: RequestHandler = async (req, res) => {

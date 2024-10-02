@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import jwt from 'jsonwebtoken'
 import config from "../config";
 import Users from "../models/Users";
+import { ValidationError } from "../exceptions/ErrorHandler";
 
 export const verifyToken: RequestHandler = async ({ body, headers }, res, next) => {
     const token = headers["x-access-token"]
@@ -11,16 +12,31 @@ export const verifyToken: RequestHandler = async ({ body, headers }, res, next) 
     }
 
     try {
-        const decoded: any = jwt.verify(JSON.parse(token.toString()), config.API_KEY)
-        const user = await Users.findById(decoded.id)
+        if (verifyLifeTimeToken(token)) {
+            const decoded: any = jwt.verify(JSON.parse(token.toString()), config.API_KEY)
+            const user = await Users.findById(decoded.id)
 
-        if (!user) return res.status(404).json({ message: 'No user found' })
-        next()
+            if (!user) return res.status(404).json({ message: 'No user found' })
+            next()
+        }
 
     } catch (error) {
-        console.error(error)
+        next(error)
     }
 }
+
+export const verifyLifeTimeToken = (token: string | any) => {
+
+    try {
+        if (token) {
+            const decoded: any = jwt.verify(JSON.parse(token.toString()), config.API_KEY)
+            return true;
+        }
+    } catch (error) {
+        throw new ValidationError(401, 'TokenExpiredError', "El token ha expirado.")
+    }
+}
+
 
 export const verifyTokenAdmin: RequestHandler = async ({ body, headers }, res, next) => {
     const token = headers["x-access-token"]

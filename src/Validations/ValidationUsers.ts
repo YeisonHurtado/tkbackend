@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt'
-import { error } from 'console'
-import e from 'express'
+import { ValidationError } from '../exceptions/ErrorHandler'
 
 interface userData {
     names: string,
@@ -34,26 +33,29 @@ export const pwdConfirmation = function (password: string, passwordConfirmation:
         return true
     }
 
-    return errorTemplate(400, 'Validation', 'pwdconfirmation', "Las contraseñas no coinciden.")
+    throw new ValidationError(400, 'passwordConfirmation', ErrorMessage.passwordConfirmation)
 }
 
 export const userFields = function (data: userData): boolean {
     const { names, surnames, birth, email, username, password, passwordConfirmation } = data
+    const fields = [
+        { name: 'names', value: names.trim(), message: ErrorMessage.names },
+        { name: 'surnames', value: surnames.trim(), message: ErrorMessage.surnames },
+        { name: 'birth', value: birth, message: ErrorMessage.birth },
+        { name: 'email', value: email.trim(), message: ErrorMessage.email },
+        { name: 'username', value: username.trim(), message: ErrorMessage.username },
+        { name: 'password', value: password, message: ErrorMessage.password },
+        { name: 'passwordConfirmation', value: passwordConfirmation, message: ErrorMessage.passwordConfirmation },
+    ]
 
-    if (!names || names.trim().length == 0) {
-        return errorTemplate(400, 'Validation', 'names', ErrorMessage.names)
-    } else if (!surnames || surnames.trim().length == 0) {
-        return errorTemplate(400, 'Validation', 'surnames', ErrorMessage.surnames)
-    } else if (!birth) {
-        return errorTemplate(400, 'Validation', 'birth', ErrorMessage.birth)
-    } else if (!email.trim()) {
-        return errorTemplate(400, 'Validation', 'email', ErrorMessage.email)
-    } else if (!username.trim()) {
-        return errorTemplate(400, 'Validation', 'username', ErrorMessage.username)
-    } else if (!password) {
-        return errorTemplate(400, 'Validation', 'password', ErrorMessage.password)
-    } else if (!passwordConfirmation || passwordConfirmation != password) {
-        return errorTemplate(400, 'Validation', 'passwordConfirmation', ErrorMessage.passwordConfirmation)
+    for (const field of fields) {
+        if (field.value.toString().length === 0) {
+            throw new ValidationError(400, field.name, field.message)
+        }
+
+        if (field.name.toString() === 'password' && field.value.toString().length < 8) {
+            throw new ValidationError(400, field.name, ErrorMessage.passwordInvalid)
+        }
     }
 
     return true
@@ -85,12 +87,12 @@ export const pwdLogin = function (password: string, userPWD: string, userFound: 
             return true
         }
     }
-
-    return errorTemplate(400, 'Validation', 'invalid_c', "Usuario o contraseña incorrectos.")
+    throw new ValidationError(400, 'invalid_c', "Usuario o contraseña incorrectos.")
 }
 
 export const activateAccount = function (activate: boolean): boolean {
     if (activate) {
+
         return true
     }
 
@@ -105,4 +107,17 @@ const errorTemplate = (status: number, name: string, path: string, message: stri
         path: path,
         message: message
     }
+}
+
+export const ValidateNoUploadedPhoto = function (uploaded: boolean) {
+    if (!uploaded) {
+        throw new ValidationError(400, "profile", "Sube una foto.")
+    }
+}
+
+export const ErrorModifyNotAllowed = function (allowed: boolean): boolean {
+    if (!allowed) {
+        throw new ValidationError(403, 'alert', "No tienes permisos para realizar esta acción.")
+    }
+    return true
 }

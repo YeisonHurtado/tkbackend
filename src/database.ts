@@ -1,7 +1,7 @@
-import mongoose, {ConnectOptions} from 'mongoose'
+import mongoose, { ConnectOptions } from 'mongoose'
 import config from './config'
 
-(async ()=>{
+(async () => {
     try {
         const mongooseOptions: ConnectOptions = {
             user: config.MONGO_USER,
@@ -9,8 +9,8 @@ import config from './config'
         }
         const db = await mongoose.connect(`mongodb://${config.MONGO_HOST}:${config.MONGO_PORT}/${config.MONGO_DATABASE}`, {
         });
-        console.log('Database is connected to:', db.connection.name);
+        console.log('Database is connected to: ', db.connection.name);
     } catch (error) {
-        console.log(error);
+        console.log('Error connecting to the database: ', error);
     }
 })();

@@ -32,7 +32,7 @@ export const getTemplateHTML = (name: string, lastname: string, token: string) =
                 padding: 10px;
                 position: relative;
                 display: flex;
-                flex-flow: column nowrap;
+                flex-flow: column;
                 justify-content: center;
                 align-items: center;
                 background-color: rgb(9, 9, 9);
@@ -60,15 +60,17 @@ export const getTemplateHTML = (name: string, lastname: string, token: string) =
                 width: 90%;
                 padding: 20px;
                 display: flex;
-                flex-flow: column nowrap;
+                flex-flow: column;
                 justify-content: center;
             }
     
             h2 {
                 margin: 10px 0;
+                color: #FFF;
             }
     
             span {
+                display:block;
                 margin-top: 10px;
             }
     
